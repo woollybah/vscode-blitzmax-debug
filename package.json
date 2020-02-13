@@ -1,0 +1,116 @@
+{
+	"name": "blitzmax-debug",
+	"displayName": "BlitzMax Debug",
+	"version": "0.0.1",
+	"publisher": "Bruce A Henderson",
+	"description": "BlitzMax debug adapter.",
+	"author": "Bruce A Henderson",
+	"license": "MIT",
+	"keywords": [
+		"blitzmax ng debug debugger"
+	],
+	"engines": {
+		"vscode": "^1.42.0"
+	},
+	"icon": "images/blitzmax-debug-icon.png",
+	"categories": [
+		"Debuggers"
+	],
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/woollybah/vscode-blitzmax-debug.git"
+	},
+	"bugs": {
+		"url": "https://github.com/woollybah/vscode-blitzmax-debug/issues"
+	},
+	"scripts": {
+		"prepublish": "tsc -p ./src",
+		"compile": "tsc -p ./src",
+		"tslint": "tslint ./src/**/*.ts",
+		"watch": "tsc -w -p ./src",
+		"test": "mocha -u tdd ./out/tests/",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"package": "vsce package",
+		"publish": "vsce publish"
+	},
+	"dependencies": {
+		"await-notify": "1.0.1",
+		"vscode-debugadapter": "1.38.0-pre.4"
+	},
+	"devDependencies": {
+		"@types/node": "10.12.12",
+		"@types/mocha": "5.2.7",
+		"typescript": "3.5.3",
+		"mocha": "6.2.0",
+		"vscode": "1.1.36",
+		"vscode-debugadapter-testsupport": "1.37.0",
+		"tslint": "5.18.0",
+		"vsce": "1.66.0"
+	},
+	"main": "./out/extension",
+	"activationEvents": [
+		"onDebug"
+	],
+	"contributes": {
+		"breakpoints": [
+			{
+				"language": "blitzmax"
+			}
+		],
+		"debuggers": [
+			{
+				"type": "blitzmax",
+				"label": "BlitzMax Debug",
+				"program": "./out/debugAdapter.js",
+				"runtime": "node",
+				"configurationAttributes": {
+					"launch": {
+						"required": [
+							"program"
+						],
+						"properties": {
+							"program": {
+								"type": "string",
+								"description": "Absolute path to a BlitzMax binary.",
+								"default": "${workspaceFolder}/${relativeFile}"
+							},
+							"stopOnEntry": {
+								"type": "boolean",
+								"description": "Automatically stop after launch.",
+								"default": true
+							},
+							"trace": {
+								"type": "boolean",
+								"description": "Enable logging of the Debug Adapter Protocol.",
+								"default": true
+							}
+						}
+					}
+				},
+				"initialConfigurations": [
+					{
+						"type": "blitzmax",
+						"request": "launch",
+						"name": "Absolute path to a BlitzMax binary.",
+						"program": "${workspaceFolder}/${relativeFile}",
+						"stopOnEntry": true
+					}
+				],
+				"configurationSnippets": [
+					{
+						"label": "BlitzMax Debug: Launch",
+						"description": "A new configuration for 'debugging' a BlitzMax application.",
+						"body": {
+							"type": "blitzmax",
+							"request": "launch",
+							"name": "Absolute path to a BlitzMax binary",
+							"program": "^\"\\${workspaceFolder}/\\${relativeFile}\"",
+							"stopOnEntry": false
+						}
+					}
+				]
+			}
+		]
+	}
+}
