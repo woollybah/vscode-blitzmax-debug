@@ -203,6 +203,11 @@ export class BlitzMaxDebugSession extends LoggingDebugSession {
 		this.sendResponse(response);
 	}
 
+	protected pauseRequest(response: DebugProtocol.PauseResponse, args: DebugProtocol.PauseArguments, request?: DebugProtocol.Request): void {
+		this._runtime.pause();
+		this.sendResponse(response);
+	}
+
 	protected threadsRequest(response: DebugProtocol.ThreadsResponse): void {
 
 		// runtime supports no threads so just return a default thread.
@@ -228,7 +233,7 @@ export class BlitzMaxDebugSession extends LoggingDebugSession {
 		};
 		this.sendResponse(response);
 	}
-
+/*
 	private scopeTypeName(scopeType:VariableScopeType) : string {
 		switch (scopeType) {
 			case VariableScopeType.LOCAL:
@@ -244,7 +249,7 @@ export class BlitzMaxDebugSession extends LoggingDebugSession {
 		}
 		return "n/a";
 	}
-
+*/
 	protected scopesRequest(response: DebugProtocol.ScopesResponse, args: DebugProtocol.ScopesArguments): void {
 		let scopes : DebugProtocol.Scope[] = [];
 

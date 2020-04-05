@@ -22,7 +22,10 @@ export enum DebugCommand {
     STEP_OUT,
     STACKTRACE,
     DUMP,
-    QUIT
+	QUIT,
+	ADD_BREAKPOINT,
+	REMOVE_BREAKPOINT,
+	PAUSE,
 }
 
 export enum DebugSetType {
@@ -463,7 +466,8 @@ class DebugProcessor {
 			case DebugCommand.STEP:
 			case DebugCommand.STEP_IN:
 			case DebugCommand.STEP_OUT:
-					this._state = DebugState.WAIT;
+			case DebugCommand.PAUSE:
+				this._state = DebugState.WAIT;
 				break;
             case DebugCommand.STACKTRACE:
 				this._state = DebugState.READ_STACK;
@@ -497,7 +501,13 @@ class DebugProcessor {
             case DebugCommand.DUMP:
                 return "d";
             case DebugCommand.QUIT:
-                return "q";
+				return "q";
+			case DebugCommand.ADD_BREAKPOINT:
+				return "b";
+			case DebugCommand.REMOVE_BREAKPOINT:
+				return "z";
+			case DebugCommand.PAUSE:
+				return "x";
         }
         return "";
 	}
@@ -562,10 +572,9 @@ export class BlitzMaxRuntime extends EventEmitter {
 
 		this.verifyBreakpoints(this._sourceFile);
 
-		program = program + ".debug.exe";
+		program = program.replace(".bmx", "") + ".debug.exe";
 
-		this._process = child_process.spawn(program, [] );
-
+		this._process = child_process.spawn(program, [], { stdio : 'inherit' } );
 
 		let handler : ConnectionHandler = {
 			connected : () => this._debugProcessor.readSet(),
@@ -616,6 +625,10 @@ export class BlitzMaxRuntime extends EventEmitter {
 		} else {
 			this._debugProcessor.dump(ref, variables, start, count);
 		}
+	}
+
+	public pause() {
+		this._debugProcessor.sendCommand(DebugCommand.PAUSE);
 	}
 
 	public getBreakpoints(path: string, line: number): number[] {
